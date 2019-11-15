@@ -66,7 +66,15 @@ define("auth_provider", default='flower.views.auth.GoogleAuth2LoginHandler',
        help="auth handler class")
 define("url_prefix", type=str, help="base url prefix")
 
+define("use_record", default=False, type=bool, help="record failure task into InfluxDB for alert")
+
 # deprecated options
 define("inspect", default=False, help="inspect workers", type=bool)
+
+define("record_host", default='localhost', help="record InfluxDB host", type=str)
+define("record_port", default=8086, help="record InfluxDB port", type=int)
+define("record_user", default='root', help="record InfluxDB user", type=str)
+define("record_password", default='root', help="record InfluxDB password", type=str)
+define("record_database", default='', help="record InfluxDB database name", type=str)
 
 default_options = options

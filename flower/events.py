@@ -15,12 +15,13 @@ from pkg_resources import parse_version
 
 from tornado.ioloop import PeriodicCallback
 from tornado.ioloop import IOLoop
+from tornado.options import options
 
 from celery.events import EventReceiver
 from celery.events.state import State
 
 from . import api
-
+from .records import Recorder
 try:
     from collections import Counter
 except ImportError:
@@ -86,6 +87,13 @@ class Events(threading.Thread):
 
         self.timer = PeriodicCallback(self.on_enable_events,
                                       self.events_enable_interval)
+        if options.use_record:
+            self.recorder = Recorder(self,
+                                     host=options.record_host,
+                                     port=options.record_port,
+                                     username=options.record_user,
+                                     password=options.record_password,
+                                     database=options.record_database)
 
     def start(self):
         threading.Thread.start(self)
@@ -137,3 +145,5 @@ class Events(threading.Thread):
     def on_event(self, event):
         # Call EventsState.event in ioloop thread to avoid synchronization
         self.io_loop.add_callback(partial(self.state.event, event))
+        if options.use_record:
+            self.recorder.record()
